@@ -38,7 +38,7 @@ variable "apply_to_all_users" {
 # ============================================================================
 terraform {
   required_version = ">= 1.0"
-  
+
   required_providers {
     aws = {
       source  = "hashicorp/aws"
@@ -66,7 +66,7 @@ data "aws_iam_policy_document" "require_mfa" {
   statement {
     sid    = "DenyAllExceptMFASetupWithoutMFA"
     effect = "Deny"
-    
+
     not_actions = [
       "iam:CreateVirtualMFADevice",
       "iam:EnableMFADevice",
@@ -80,52 +80,52 @@ data "aws_iam_policy_document" "require_mfa" {
       "iam:GetAccountSummary",
       "iam:ListAccountAliases",
     ]
-    
+
     resources = ["*"]
-    
+
     condition {
       test     = "BoolIfExists"
       variable = "aws:MultiFactorAuthPresent"
       values   = ["false"]
     }
   }
-  
+
   # Allow viewing account information
   statement {
     sid    = "AllowViewAccountInfo"
     effect = "Allow"
-    
+
     actions = [
       "iam:GetAccountPasswordPolicy",
       "iam:GetAccountSummary",
       "iam:ListVirtualMFADevices",
       "iam:ListAccountAliases",
     ]
-    
+
     resources = ["*"]
   }
-  
+
   # Allow managing own passwords and access keys
   statement {
     sid    = "AllowManageOwnPasswordsAndAccessKeys"
     effect = "Allow"
-    
+
     actions = [
       "iam:ChangePassword",
       "iam:GetUser",
       "iam:GetLoginProfile",
     ]
-    
+
     resources = [
       "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/$${aws:username}"
     ]
   }
-  
+
   # Allow managing own MFA devices
   statement {
     sid    = "AllowManageOwnMFADevices"
     effect = "Allow"
-    
+
     actions = [
       "iam:CreateVirtualMFADevice",
       "iam:DeleteVirtualMFADevice",
@@ -134,7 +134,7 @@ data "aws_iam_policy_document" "require_mfa" {
       "iam:ResyncMFADevice",
       "iam:DeactivateMFADevice",
     ]
-    
+
     resources = [
       "arn:aws:iam::${data.aws_caller_identity.current.account_id}:mfa/$${aws:username}",
       "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/$${aws:username}",
@@ -175,7 +175,7 @@ resource "aws_iam_group_policy_attachment" "mfa_enforcement" {
 # ============================================================================
 resource "aws_iam_group_membership" "mfa_required_users" {
   count = length(var.users_requiring_mfa) > 0 ? 1 : 0
-  
+
   name  = "${var.mfa_required_group_name}-membership"
   group = aws_iam_group.mfa_required.name
   users = var.users_requiring_mfa
@@ -185,7 +185,7 @@ resource "aws_iam_group_membership" "mfa_required_users" {
 # ============================================================================
 resource "aws_iam_user_policy_attachment" "mfa_all_users" {
   for_each = var.apply_to_all_users ? toset(data.aws_iam_users.all[0].names) : toset([])
-  
+
   user       = each.value
   policy_arn = aws_iam_policy.require_mfa.arn
 }
