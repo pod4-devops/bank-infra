@@ -30,4 +30,4 @@ variable "fluent_bit_namespace" {
 variable "node_group_name" {
   description = "dev-eks-node-group"
   type        = string
-}
+}|C
