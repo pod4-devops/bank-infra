@@ -1,4 +1,4 @@
-aws_region               = "us-east-1"
+aws_region              = "us-east-1"
 mfa_policy_name         = "RequireMFAPolicy"
 mfa_required_group_name = "MFARequiredUsers"
 
