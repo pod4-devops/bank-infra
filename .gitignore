@@ -4,7 +4,3 @@
 **.tfstate
 **.tfstate.backup
 *.DS_Store
-
-.terraform/
-bank-infra/
-bank-infra/

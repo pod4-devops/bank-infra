@@ -1,3 +1,5 @@
+ dev
+
 provider "helm" {
   kubernetes {
     host                   = aws_eks_cluster.eks.endpoint
@@ -16,6 +18,7 @@ provider "kubernetes" {
 data "aws_eks_cluster_auth" "eks" {
   name = aws_eks_cluster.eks.name
 }
+ main
 resource "helm_release" "nginx_ingress" {
   name             = "nginx-ingress"
   repository       = "https://kubernetes.github.io/ingress-nginx"
@@ -43,12 +46,23 @@ resource "helm_release" "cert_manager" {
   version          = "1.14.5"
   namespace        = "cert-manager"
   create_namespace = true
+ dev
+
+  set {
+      name  = "installCRDs"
+      value = "true"
+    }
+  
+
+
   set {
     name  = "installCRDs"
     value = "true"
   }
+ main
   depends_on = [helm_release.nginx_ingress]
 }
+
 #==================================================
 
 resource "helm_release" "argocd" {
