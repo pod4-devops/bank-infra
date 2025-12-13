@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bank46-app
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bank46-app
+  template:
+    metadata:
+      labels:
+        app: bank46-app
+    spec:
+      serviceAccountName: bank46-secret-sa
+      containers:
+      - name: app
+        image: nginx:alpine
+        env:
+        - name: AWS_REGION
+          value: "us-east-1"
