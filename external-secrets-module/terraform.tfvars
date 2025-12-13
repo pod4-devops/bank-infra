@@ -1,0 +1,5 @@
+aws_region                           = "us-east-1"
+cluster_name                         = "dev-test-eks"
+secret_name                          = "bank-app/db-credentials"
+namespace                            = "external-secrets"
+external_secrets_operator_version    = "0.9.0"
