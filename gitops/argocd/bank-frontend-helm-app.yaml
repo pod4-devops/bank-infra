@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: bank-frontend
+  namespace: argocd
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/pod4-devops/bank-kubernetes-manifest
+    targetRevision: main
+    path: bank-frontend
+    helm:
+      valueFiles:
+      - values.yaml
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: bank-frontend
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
